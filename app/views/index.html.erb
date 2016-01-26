@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<head>
+  <meta charset='UTF-8'>
+  <style>
+    html, body {width: 100%; height:100%;}
+    body {font-size: 1.5em; background-color: #eee;}
+    p {padding: 0.2em; margin: 0;}
+    .received { color: #00f;}
+    .sent { color: #80f;}
+    input, #output, #status {font-size: 1em; width: 60%; margin: 0.5em 19%; padding: 0.5em 1%;}
+    input[type=submit] { margin: 0.5em 20%; padding: 0;}
+    #output {height: 60%; overflow: auto; background-color: #fff;}
+    .connected {background-color: #efe;}
+    .disconnected {background-color: #fee;}
+  </style>
+  <script>
+    var websocket = NaN;
+    var last_msg = NaN;
+    function Connect() {
+        websocket = new WebSocket( (window.location.protocol.indexOf('https') < 0 ? 'ws' : 'wss') + '://' + window.location.hostname + (window.location.port == '' ? '' : (':' + window.location.port) ) + "/chatroom/" + document.getElementById("input").value );
+    }
+    function Init()
+    {
+        Connect()
+        websocket.onopen = function(e) { update_status(); WriteStatus({'message':'Connected :)'})};
+        websocket.onclose = function(e) { websocket = NaN; update_status(); };
+        websocket.onmessage = function(e) {
+            var msg = JSON.parse(e.data)
+            last_msg = msg
+            if(msg.event == 'chat') WriteMessage(msg, 'received')
+            if(msg.event == 'error') WriteStatus(msg)
+        };
+        websocket.onerror = function(e) { websocket = NaN; update_status(); };
+    }
+    function WriteMessage( message, message_type )
+    {
+        if (!message_type) message_type = 'received'
+        var msg = document.createElement("p");
+        msg.className = message_type;
+        msg.innerHTML = message.from + ": " + message.message;
+        document.getElementById("output").appendChild(msg);
+    }
+    function WriteStatus( message )
+    {
+        document.getElementById("status").innerHTML = message.message;
+    }
+    function Send()
+    {
+        var msg = {'event':'chat', 'from':'me', 'message':document.getElementById("input").value}
+        WriteMessage(msg, 'sent'); 
+        websocket.send(JSON.stringify(msg));
+    }
+    function update_status()
+    {
+        if(websocket)
+        {
+            document.getElementById("submit").value = "Send"
+            document.getElementById("input").placeholder = "your message goes here"
+            document.getElementById("status").className = "connected"
+        }
+        else
+        {
+            document.getElementById("submit").value = "Connect"
+            document.getElementById("input").placeholder = "your nickname"
+            document.getElementById("status").className = "disconnected"
+            if(last_msg.event != 'error') document.getElementById("status").innerHTML = "Please choose your nickname and join in..."
+        }
+    }
+    function on_submit()
+    {
+        if(websocket)
+        {
+            Send()
+        }
+        else
+        {
+            Init()
+        }
+        document.getElementById("input").value = ""
+    }
+  </script>
+</head>
+<body>
+    <div id='status' class='disconnected'>Please choose your nickname and join in...</div>
+    <div id='output'></div>
+    <form onsubmit='on_submit(); return false'>
+        <input id='input' type='text' placeholder='your nickname.' value='' />
+        <input type='submit' value='Connect' id='submit' />
+    </form>
+</body>
