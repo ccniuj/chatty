@@ -32,30 +32,33 @@ class ChatController
       response << data
   end
 
-  def on_connect
+  def on_open
     if params[:id].nil?
       response << {event: :error, from: :system, at: Time.now, message:   "Error: cannot connect without a nickname!"}.to_json
       response.close
       return false
     end
     message = {from: '', at: Time.now}
-    list = collect(:_ask_nickname)
-    if ((list.map {|n| n.downcase}) + ['admin', 'system', 'sys', 'administrator']).include? params[:id].downcase
-      message[:event] = :error
-      message[:message] = "The nickname '#{params[:id]}' is already taken."
-      response << message.to_json
-      params[:id] = false
-      response.close
-      return
-    end
+    
+    # list = collect(:_ask_nickname)
+
+    # if ((list.map {|n| n.downcase}) + ['admin', 'system', 'sys', 'administrator']).include? params[:id].downcase
+    #   message[:event] = :error
+    #   message[:message] = "The nickname '#{params[:id]}' is already taken."
+    #   response << message.to_json
+    #   params[:id] = false
+    #   response.close
+    #   return
+    # end
+    # message[:message] = list.empty? ? "You're the first one here." : "#{list[0..-2].join(', ')} #{list[1] ? 'and' : ''} #{list.last} #{list[1] ? 'are' : 'is'} already in the chatroom"
+    message[:message] = "hello, #{params[:id]}"
     message[:event] = :chat
-    message[:message] = list.empty? ? "You're the first one here." : "#{list[0..-2].join(', ')} #{list[1] ? 'and' : ''} #{list.last} #{list[1] ? 'are' : 'is'} already in the chatroom"
     response << message.to_json
     message[:message] = "#{params[:id]} joined the chatroom."
     broadcast :_send_message, message.to_json
   end
 
-  def on_disconnect
+  def on_close
       broadcast :_send_message, {event: :chat, from: '', at: Time.now, message: "#{params[:id]} left the chatroom."}.to_json if params[:id]
   end
 
