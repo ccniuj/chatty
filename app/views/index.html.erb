@@ -697,7 +697,7 @@
         item.className = 'item';
         item.innerHTML = html;
         document.getElementById("chat-box").appendChild(item);
-
+        scroll_to_bottom();
     }
     function WriteStatus( message )
     {
@@ -706,7 +706,7 @@
     function Send()
     {
         var msg = {'event':'chat', 'from':'me', 'message':document.getElementById("input").value}
-        WriteMessage(msg, 'sent', 'test'); 
+        WriteMessage(msg, 'sent', 'test');
         websocket.send(JSON.stringify(msg));
     }
     function update_status()
@@ -740,37 +740,15 @@
     function generate_chatbox()
     {
         users.forEach(function(entry) {
-            msg =   '<img src="' +
-                     avatars +
-                     '" alt="user image" class="online">' +
-                     '<p class="message">' +
-                     '<a href="#" class="name">' +
-                       '<small class="text-muted pull-right"><i class="fa fa-clock-o"></i>' +
-                       timestamps +
-                       '</small>' +
-                       entry +
-                       '</a>' +
-                       messages +
-                     '</p>';
-
-            var item = document.createElement("div");
-            item.className = 'item';
-            item.innerHTML = msg;
-            document.getElementById("chat-box").appendChild(item);
+            WriteMessage({'message':messages}, 'sent', entry);
         });
+    }
+    function scroll_to_bottom()
+    {
+        var scrollTo_val = $('#chat-box').prop('scrollHeight');
+        $('#chat-box').slimScroll({ scrollTo: scrollTo_val, height: '410px' });
     }
     generate_chatbox();
     </script>
   </body>
 </html>
-
-  
-
-<!-- <body>
-    <div id='status' class='disconnected'>Please choose your nickname and join in...</div>
-    <div id='output'></div>
-    <form onsubmit='on_submit(); return false'>
-        <input id='input' type='text' placeholder='your nickname.' value='' />
-        <input type='submit' value='Connect' id='submit' />
-    </form>
-</body> -->
