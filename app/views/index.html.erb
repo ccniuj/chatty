@@ -669,18 +669,35 @@
         websocket.onmessage = function(e) {
             var msg = JSON.parse(e.data)
             last_msg = msg
-            if(msg.event == 'chat') WriteMessage(msg, 'received')
+            if(msg.event == 'chat') WriteMessage(msg, 'received', 'test')
             if(msg.event == 'error') WriteStatus(msg)
         };
         websocket.onerror = function(e) { websocket = NaN; update_status(); };
     }
-    function WriteMessage( message, message_type )
+    function WriteMessage( message, message_type, user)
     {
-        if (!message_type) message_type = 'received'
-        var msg = document.createElement("p");
-        msg.className = message_type;
-        msg.innerHTML = message.from + ": " + message.message;
-        document.getElementById("chat-box").appendChild(msg);
+        // if (!message_type) message_type = 'received'
+        // var msg = document.createElement("p");
+        // msg.className = message_type;
+        // msg.innerHTML = message.from + ": " + message.message;
+        // document.getElementById("chat-box").appendChild(msg);
+        var html =   '<img src="' +
+                 avatars +
+                 '" alt="user image" class="online">' +
+                 '<p class="message">' +
+                 '<a href="#" class="name">' +
+                   '<small class="text-muted pull-right"><i class="fa fa-clock-o"></i>'+
+                   timestamps +
+                   '</small>' +
+                   user +
+                   '</a>' +
+                   message.message +
+                 '</p>';
+        var item = document.createElement("div");
+        item.className = 'item';
+        item.innerHTML = html;
+        document.getElementById("chat-box").appendChild(item);
+
     }
     function WriteStatus( message )
     {
@@ -689,7 +706,7 @@
     function Send()
     {
         var msg = {'event':'chat', 'from':'me', 'message':document.getElementById("input").value}
-        WriteMessage(msg, 'sent'); 
+        WriteMessage(msg, 'sent', 'test'); 
         websocket.send(JSON.stringify(msg));
     }
     function update_status()
