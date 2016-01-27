@@ -1,7 +1,7 @@
 require 'plezi'
 require 'pathname'
 
-class ChatController
+class ChatController < ApplicationController
   # the index will answer '/'
   # a regular method will answer it's own name i.e. '/foo'
   def foo
@@ -14,7 +14,7 @@ class ChatController
 
   def index
     response['content-type'] = 'text/html'
-    render(:index)
+    render :index
   end
 
   def on_message data
@@ -69,9 +69,10 @@ end
 
 # Using pathname extentions for setting public folder
 # set up the Root object for easy path access.
-Root = Pathname.new(File.dirname(__FILE__)).expand_path.parent.parent
 
 # set up the Plezi service options
+Root = Pathname.new(File.dirname(__FILE__)).expand_path.parent.parent
+
 service_options = {
   # root: Root.join('public').to_s,
   # assets: Root.join('assets').to_s,
