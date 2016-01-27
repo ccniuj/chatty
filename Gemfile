@@ -47,3 +47,4 @@ end
 
 gem 'plezi'
 gem 'pry'
+gem 'devise'
