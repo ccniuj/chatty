@@ -41,14 +41,15 @@
                   + "</a>");
 
   //Add the tab button to the right sidebar tabs
-  $("[href='#control-sidebar-home-tab']")
-          .parent()
-          .before(tab_button);
+  // $("[href='#control-sidebar-home-tab']")
+  //         .parent()
+  //         .before(tab_button);
 
   //Create the menu
   var demo_settings = $("<div />");
 
   //Layout options
+  
   demo_settings.append(
           "<h4 class='control-sidebar-heading'>"
           + "Layout Options"
@@ -102,6 +103,7 @@
           + "<p>Toggle between dark and light skins for the right sidebar</p>"
           + "</div>"
           );
+  
   var skins_list = $("<ul />", {"class": 'list-unstyled clearfix'});
 
   //Dark sidebar skins
@@ -207,7 +209,7 @@
   demo_settings.append("<h4 class='control-sidebar-heading'>Skins</h4>");
   demo_settings.append(skins_list);
 
-  tab_pane.append(demo_settings);
+  //tab_pane.append(demo_settings);
   $("#control-sidebar-home-tab").after(tab_pane);
 
   setup();
