@@ -2,6 +2,7 @@ require 'plezi'
 require 'pathname'
 
 class ChatController < ApplicationController
+  before_action :authenticate_user!
   # the index will answer '/'
   # a regular method will answer it's own name i.e. '/foo'
   def foo

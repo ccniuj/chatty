@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'statics#index'
 
-  resources :statics
+  resources :statics do
+    get 'check_if_signed_in', on: :collection
+  end
   
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
