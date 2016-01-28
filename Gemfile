@@ -49,3 +49,5 @@ gem 'plezi'
 gem 'pry'
 gem 'devise'
 gem 'awesome_print'
+gem "omniauth-google-oauth2"
+gem "figaro"
