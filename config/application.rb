@@ -21,6 +21,13 @@ module Chatty
     # config.i18n.default_locale = :de
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
-    config.active_record.raise_in_transactional_callbacks = true
+    config.before_initialize do
+      # if Module.const_defined?('Rails') # if Rails
+        # if rake || console  (rake => "API" , console => "Console" , server => "Server")
+        if Rails.const_defined?('API') || Rails.const_defined?('Console')
+          Iodine.protocol = nil
+        end
+      # end
+    end
   end
 end
