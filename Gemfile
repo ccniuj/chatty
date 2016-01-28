@@ -48,3 +48,4 @@ end
 gem 'plezi'
 gem 'pry'
 gem 'devise'
+gem 'awesome_print'
