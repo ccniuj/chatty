@@ -3,8 +3,8 @@
 		<center>
 			<span style="font-size:50px;color:#000;">你好, 我是Chatty</span><br/>
 			<span style="font-size:28px;color:#000;">今天你想聊什麼？</span><br/>
-			<%= link_to '開始跟我聊天', check_if_signed_in_statics_path, :class => "btn btn-success btn-lg", :style => "margin-top:50px;" %>
+			<%= link_to '開始跟我聊天', check_if_signed_in_statics_path, :class => "btn btn-success btn-lg", :style => "margin-top:50px;", 'data-no-turbolink' => 'true' %>
 		</center>
 	</div>
-	<img src="/images/wordcloud.svg" style="width:100%;opacity:0.3;" id="image"/>
+	<img src="/images/wordcloud.svg" style="width:100%;opacity:0.3;"/>
 </div>

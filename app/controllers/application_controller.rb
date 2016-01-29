@@ -16,5 +16,5 @@ class ApplicationController < ActionController::Base
     # is_a?(Devise::SessionsController) ? false : "application"
     # or turn layout off for every devise controller:
     false if devise_controller?
-  end 
+  end
 end

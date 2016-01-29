@@ -13,6 +13,10 @@ class ChatController < ApplicationController
     "Are you looking for: #{params[:id]}?"
   end
 
+  def get_user
+
+  end
+
   def index
     response['content-type'] = 'text/html'
     render :index

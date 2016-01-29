@@ -4,6 +4,6 @@ class StaticsController < ApplicationController
 
 	def check_if_signed_in
     authenticate_user!
-    redirect_to '/chatroom/index'
+    redirect_to "/chatroom/index?#{current_user.id.to_s}"
 	end
 end
