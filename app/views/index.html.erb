@@ -245,7 +245,7 @@
                   <li class="user-header">
                     <img src="/template/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
                     <p>
-                      *username
+                      @current_user.name
                     </p>
                   </li>
                   <li class="user-footer">
@@ -647,18 +647,19 @@
     }
     function Init()
     {
-        Connect()
-        websocket.onopen = function(e) { update_status(); 
-            //WriteStatus({'message':'Connected :)'})
+        Connect();
+        websocket.onopen = function(e) { 
+            update_status();
+            //WriteStatus({'message':'Connected :)'});
         };
-        websocket.onclose = function(e) { websocket = NaN; update_status(); };
+        // websocket.onclose = function(e) { websocket = NaN; update_status(); };
         websocket.onmessage = function(e) {
-            var msg = JSON.parse(e.data)
-            last_msg = msg
-            if(msg.event == 'chat') WriteMessage(msg, 'received', 'test')
-            if(msg.event == 'error') WriteStatus(msg)
+            var msg = JSON.parse(e.data);
+            last_msg = msg;
+            if(msg.event == 'chat') WriteMessage(msg, 'received', 'test');
+            if(msg.event == 'error') WriteStatus(msg);
         };
-        websocket.onerror = function(e) { websocket = NaN; update_status(); };
+        // websocket.onerror = function(e) { websocket = NaN; update_status(); };
     }
     function WriteMessage( message, message_type, user)
     {

@@ -1,5 +1,6 @@
 class StaticsController < ApplicationController
 	def index
+		binding.pry
 	end
 
 	def check_if_signed_in

@@ -49,5 +49,6 @@ gem 'plezi'
 gem 'pry'
 gem 'devise'
 gem 'awesome_print'
-gem "omniauth-google-oauth2"
-gem "figaro"
+gem 'omniauth-google-oauth2'
+gem 'figaro'
+gem 'redis-session-store'

@@ -1,8 +1,11 @@
 require 'plezi'
 require 'pathname'
+require 'redis'
 
-class ChatController < ApplicationController
-  before_action :authenticate_user!
+ENV['PL_REDIS_URL'] = "redis://localhost:6379/0"
+
+class ChatController
+
   # the index will answer '/'
   # a regular method will answer it's own name i.e. '/foo'
   def foo
@@ -13,11 +16,9 @@ class ChatController < ApplicationController
     "Are you looking for: #{params[:id]}?"
   end
 
-  def get_user
-
-  end
-
   def index
+    binding.pry
+    # @current_user = get_user
     response['content-type'] = 'text/html'
     render :index
   end
@@ -69,6 +70,12 @@ class ChatController < ApplicationController
 
   def _ask_nickname
       return params[:id]
+  end
+
+  private
+  def get_user
+    uid = params.keys.map{|p|p.to_s}.grep(/[0-9]+/).first
+    User.find(uid)
   end
 end
 
