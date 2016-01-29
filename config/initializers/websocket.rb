@@ -17,10 +17,10 @@ class ChatController
   end
 
   def index
+    @current_user = get_user
     binding.pry
-    # @current_user = get_user
     response['content-type'] = 'text/html'
-    render :index
+    render :chat
   end
 
   def on_message data
@@ -74,7 +74,14 @@ class ChatController
 
   private
   def get_user
-    uid = params.keys.map{|p|p.to_s}.grep(/[0-9]+/).first
+    user_session = ObjectSpace.each_object(ActionDispatch::Request::Session).
+      to_a.select do |session|
+        session.id == cookies['_chatty_session']
+      end.
+      first
+    
+    values = user_session['warden.user.user.key']
+    uid = values.flatten.first
     User.find(uid)
   end
 end
@@ -89,7 +96,7 @@ service_options = {
   # root: Root.join('public').to_s,
   # assets: Root.join('assets').to_s,
   # assets_public: '/',
-  templates: Root.join('app/views').to_s,
+  templates: Root.join('app/views/statics').to_s,
   ssl: false
 }
 
