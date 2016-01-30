@@ -26,10 +26,10 @@ class ChatController
       response.close
       return false
     end
-    
+
     message = {
       event: :chat,
-      from: params[:id],
+      from: @current_user.name,
       message: data["message"],
       selfie_url: @current_user.selfie_url,
       at: Time.now,
@@ -63,12 +63,12 @@ class ChatController
     #   return
     # end
     # message[:message] = list.empty? ? "You're the first one here." : "#{list[0..-2].join(', ')} #{list[1] ? 'and' : ''} #{list.last} #{list[1] ? 'are' : 'is'} already in the chatroom"
-    message[:message] = "hello, #{params[:id]}"
+    message[:message] = "hello, #{@current_user.name}"
     message[:event] = :chat
     message[:selfie_url] = @current_user.selfie_url
     message[:connections] = @connections
     response << message.to_json
-    message[:message] = "#{params[:id]} joined the chatroom."
+    message[:message] = "#{@current_user.name} joined the chatroom."
     message[:connections] = get_current_connection
     broadcast :_send_message, message.to_json
   end
