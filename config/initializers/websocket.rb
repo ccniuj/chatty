@@ -10,6 +10,7 @@ class ChatController
   # a regular method will answer it's own name i.e. '/foo'
   def before
     @current_user = get_user
+    @connections = get_connections
   end
 
   def index
@@ -25,7 +26,17 @@ class ChatController
       response.close
       return false
     end
-    broadcast :_send_message, {event: :chat, from: params[:id], message: data["message"], selfie_url: @current_user.selfie_url, at: Time.now}.to_json
+    
+    message = {
+      event: :chat,
+      from: params[:id],
+      message: data["message"],
+      selfie_url: @current_user.selfie_url,
+      at: Time.now,
+      connections: []
+    }
+
+    broadcast :_send_message, message.to_json
   end
 
   def _send_message data
@@ -35,9 +46,11 @@ class ChatController
   def on_open
     if params[:id].nil?
       response << {event: :error, from: :system, at: Time.now, message:   "Error: cannot connect without a nickname!"}.to_json
-      response.close
+      close
       return false
     end
+    register_as params[:id]
+    # notify user_id, :event_name, "string data", hash: :data, more_hash: :data
     message = {from: '', at: Time.now}
     # list = collect(:_ask_nickname)
 
@@ -53,9 +66,10 @@ class ChatController
     message[:message] = "hello, #{params[:id]}"
     message[:event] = :chat
     message[:selfie_url] = @current_user.selfie_url
+    message[:connections] = @connections
     response << message.to_json
     message[:message] = "#{params[:id]} joined the chatroom."
-    # binding.pry
+    message[:connections] = get_current_connection
     broadcast :_send_message, message.to_json
   end
 
@@ -67,7 +81,6 @@ class ChatController
       return params[:id]
   end
 
-  private
   def get_user
     user_session = ObjectSpace.each_object(ActionDispatch::Request::Session).
       to_a.select do |session|
@@ -78,6 +91,21 @@ class ChatController
     values = user_session['warden.user.user.key']
     uid = values.flatten.first
     User.find(uid)
+  end
+
+  def get_connections
+    connections = ObjectSpace.each_object(Plezi::Base::WSObject).to_a.map do |connection|
+      {'uuid' => connection.cookies['rails_uuid'], 'user' => connection.get_user}
+    end.
+    uniq
+  end
+
+  def get_current_connection
+    @connections ||= get_connections
+    @current_user ||= get_user
+    @connections.select do |connection|
+      connection['user'].id == @current_user.id
+    end
   end
 end
 
