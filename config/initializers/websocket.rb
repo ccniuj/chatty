@@ -39,7 +39,7 @@ class ChatController
     if to.empty?
       broadcast :_send_message, message.to_json
     else
-      notify(to.to_i, :chat, 'test')
+      notify(to.to_i, :_send_message, message.to_json)
     end
   end
 
