@@ -18,7 +18,6 @@ class ChatController
 
   def index
     @current_user = get_user
-    binding.pry
     response['content-type'] = 'text/html'
     render :chat
   end
@@ -79,7 +78,7 @@ class ChatController
         session.id == cookies['_chatty_session']
       end.
       first
-    
+
     values = user_session['warden.user.user.key']
     uid = values.flatten.first
     User.find(uid)
