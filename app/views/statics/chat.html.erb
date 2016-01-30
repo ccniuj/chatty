@@ -596,7 +596,7 @@
     var selfie_url = document.getElementById("selfie").src;
 
     function Connect() {
-        websocket = new WebSocket( (window.location.protocol.indexOf('https') < 0 ? 'ws' : 'wss') + '://' + window.location.hostname + (window.location.port == '' ? '' : (':' + window.location.port) ) + "/chatroom/" + document.getElementById("input").value );
+        websocket = new WebSocket( (window.location.protocol.indexOf('https') < 0 ? 'ws' : 'wss') + '://' + window.location.hostname + (window.location.port == '' ? '' : (':' + window.location.port) ) + "/chatroom/");
     }
     function Init()
     {
@@ -701,10 +701,6 @@
         {
             Send()
         }
-        else
-        {
-            Init()
-        }
         document.getElementById("input").value = ""
     }
     function generate_chatbox()
@@ -740,8 +736,8 @@
         return cookies;
 
     }
-    generate_chatbox();
-
+    //generate_chatbox();
+    Init();
     </script>
   </body>
 </html>
