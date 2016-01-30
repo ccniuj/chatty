@@ -657,16 +657,22 @@
             var msg = JSON.parse(e.data);
             last_msg = msg;
             msg.connections.forEach(function(e) {
-            //   <li class="active treeview">
+            
+              var sidebar = document.getElementsByClassName("sidebar-menu")[0];
+              var node = document.createElement("LI");
+
+              //   <li class="active treeview">
             //   <a href="/chatroom/index">
             //     <i class="fa fa-cloud"></i> <span>Chatty</span><i class="fa fa-circle pull-right" style="color:#3c8dbc;"></i>
             //   </a>
             // </li>
-              var sidebar = document.getElementsByClassName("sidebar-menu")[0];
-              var node = document.createElement("LI");
-              node.innerHTML = e.user.name;
+              node.className = 'treeview';
+              node.innerHTML = '<a href="/chatroom/index">' +
+                '<i class="fa fa-user"></i> <span>' + 
+                e.user.name + 
+                '</span><i class="fa fa-circle pull-right" style="color:#3c8dbc;"></i>' +
+                '</a>'
               node.style.color = '#b8c7ce';
-
               sidebar.appendChild(node);
             });
             if(msg.event == 'chat') WriteMessage(msg, 'received');
@@ -695,6 +701,7 @@
                  '</p>';
         var item = document.createElement("div");
         item.className = 'item';
+        item.style.minHeight = '50px';
         item.innerHTML = html;
         document.getElementById("chat-box").appendChild(item);
         scroll_to_bottom();
