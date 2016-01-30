@@ -19,7 +19,8 @@ default: &default
   encoding: utf8
   # For details on connection pooling, see rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: 5
+  pool: 40
+  timeout: 5000
 
 development:
   <<: *default
