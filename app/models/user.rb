@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  # encoding: utf-8
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,

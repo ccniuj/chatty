@@ -237,7 +237,7 @@
               <!-- User Account: style can be found in dropdown.less -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src="<%=@current_user.selfie_url%>" class="user-image" alt="User Image">
+                  <img src="<%=@current_user.selfie_url%>" class="user-image" alt="User Image" id="selfie">
                   <span class="hidden-xs"><%= @current_user.name %></span>
                 </a>
                 <ul class="dropdown-menu">
@@ -640,7 +640,7 @@
     var users = ['Mike', 'Alex', 'Susan', 'David', 'Juin'];
     var messages = 'I would like to meet you to discuss the latest news about the arrival of the new theme. They say it is going to be one the best themes on the market';
     var timestamps = '5:25';
-    var avatars = "/template/dist/img/user3-128x128.jpg";
+    var selfie_url = document.getElementById("selfie").src;
 
     function Connect() {
         websocket = new WebSocket( (window.location.protocol.indexOf('https') < 0 ? 'ws' : 'wss') + '://' + window.location.hostname + (window.location.port == '' ? '' : (':' + window.location.port) ) + "/chatroom/" + document.getElementById("input").value );
@@ -656,27 +656,27 @@
         websocket.onmessage = function(e) {
             var msg = JSON.parse(e.data);
             last_msg = msg;
-            if(msg.event == 'chat') WriteMessage(msg, 'received', 'test');
+            if(msg.event == 'chat') WriteMessage(msg, 'received');
             if(msg.event == 'error') WriteStatus(msg);
         };
         // websocket.onerror = function(e) { websocket = NaN; update_status(); };
     }
-    function WriteMessage( message, message_type, user)
+    function WriteMessage( message, message_type)
     {
         // if (!message_type) message_type = 'received'
         // var msg = document.createElement("p");
         // msg.className = message_type;
         // msg.innerHTML = message.from + ": " + message.message;
         // document.getElementById("chat-box").appendChild(msg);
-        var html =   '<img src="' +
-                 avatars +
+        var html = '<img src="' +
+                 message.selfie_url +
                  '" alt="user image" class="online">' +
                  '<p class="message">' +
                  '<a href="#" class="name">' +
                    '<small class="text-muted pull-right"><i class="fa fa-clock-o"></i>'+
                    timestamps +
                    '</small>' +
-                   user +
+                   message.from +
                    '</a>' +
                    message.message +
                  '</p>';
@@ -692,8 +692,8 @@
     }
     function Send()
     {
-        var msg = {'event':'chat', 'from':'me', 'message':document.getElementById("input").value}
-        WriteMessage(msg, 'sent', 'test');
+        var msg = {'event':'chat', 'from':'me', 'message':document.getElementById("input").value, 'selfie_url':selfie_url}
+        WriteMessage(msg, 'sent');
         websocket.send(JSON.stringify(msg));
     }
     function update_status()
@@ -727,7 +727,7 @@
     function generate_chatbox()
     {
         users.forEach(function(entry) {
-            WriteMessage({'message':messages}, 'sent', entry);
+            WriteMessage({'message':messages, 'from':entry, 'selfie_url':'http://pixelvulture.com/wp-content/uploads/2014/07/Selfie-Toy-Story-Woody.jpg'}, 'sent');
         });
     }
     function scroll_to_bottom()
