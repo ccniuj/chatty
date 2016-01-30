@@ -714,6 +714,10 @@
     }
     function on_submit()
     {
+        if (document.getElementById("input").value == "") {
+          return false;
+        }
+
         if(websocket)
         {
             Send()
