@@ -60,7 +60,7 @@ class ChatController
       message:       greeting,
       event:         :chat,
       selfie_url:    @current_user.selfie_url,
-      connections:   @connections  
+      connections:   @connections
     }
 
     response << message.to_json
@@ -71,7 +71,17 @@ class ChatController
   end
 
   def on_close
-      broadcast :_send_message, {event: :chat, from: '', at: Time.now, message: "#{@current_user.name}已離開對話"}.to_json if params[:id]
+    message = {
+      event:         :chat,
+      from:          '',
+      at:            Time.now,
+      message:       "#{@current_user.name}已離開對話",
+      selfie_url:    @current_user.selfie_url,
+      connections:   @connections
+    }
+    close
+    p 'plezi close websocket'
+    broadcast :_send_message, message.to_json
   end
 
   def _ask_nickname

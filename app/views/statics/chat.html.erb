@@ -590,10 +590,13 @@
     <script>
     var websocket = NaN;
     var last_msg = NaN;
-    var users = ['Mike', 'Alex', 'Susan'];
-    var messages = 'I would like to meet you to discuss the latest news about the arrival of the new theme';
-    var timestamps = '5:25';
     var selfie_url = document.getElementById("selfie").src;
+
+    window.onbeforeunload = function(e) {
+      //console.log('before unload');
+      // Close();
+      // return 'Dialog text here.';
+    };
 
     function Connect() {
         websocket = new WebSocket( (window.location.protocol.indexOf('https') < 0 ? 'ws' : 'wss') + '://' + window.location.hostname + (window.location.port == '' ? '' : (':' + window.location.port) ) + "/chatroom/");
@@ -602,10 +605,13 @@
     {
         Connect();
         websocket.onopen = function(e) { 
-            update_status();
+            //update_status();
             //WriteStatus({'message':'Connected :)'});
         };
-        // websocket.onclose = function(e) { websocket = NaN; update_status(); };
+        websocket.onclose = function(e) { 
+          // websocket = NaN; update_status(); 
+          // console.log('closed!!!');
+        };
         websocket.onmessage = function(e) {
             var msg = JSON.parse(e.data);
             last_msg = msg;
@@ -614,11 +620,6 @@
               var sidebar = document.getElementsByClassName("sidebar-menu")[0];
               var node = document.createElement("LI");
 
-              //   <li class="active treeview">
-            //   <a href="/chatroom/index">
-            //     <i class="fa fa-cloud"></i> <span>Chatty</span><i class="fa fa-circle pull-right" style="color:#3c8dbc;"></i>
-            //   </a>
-            // </li>
               node.className = 'treeview';
               node.innerHTML = '<a href="/chatroom/index">' +
                 '<i class="fa fa-user"></i> <span>' + 
@@ -635,11 +636,6 @@
     }
     function WriteMessage( message, message_type)
     {
-        // if (!message_type) message_type = 'received'
-        // var msg = document.createElement("p");
-        // msg.className = message_type;
-        // msg.innerHTML = message.from + ": " + message.message;
-        // document.getElementById("chat-box").appendChild(msg);
         var html = '<img src="' +
                  message.selfie_url +
                  '" alt="user image" class="online">' +
@@ -674,6 +670,12 @@
         };
         WriteMessage(msg, 'sent');
         websocket.send(JSON.stringify(msg));
+    }
+    function Close()
+    {
+        debugger;
+        console.log('closd is called');
+        websocket.close('1000', 'Close normally.');
     }
     function update_status()
     {
