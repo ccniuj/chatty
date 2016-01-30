@@ -23,7 +23,7 @@ class ChatController
       data = JSON.parse data
     rescue Exception => e
       response << {event: :error, message: "Unknown Error"}.to_json
-      response.close
+      close
       return false
     end
 
@@ -35,8 +35,12 @@ class ChatController
       at: Time.now,
       connections: []
     }
-
-    broadcast :_send_message, message.to_json
+    to = data["to"]
+    if to.empty?
+      broadcast :_send_message, message.to_json
+    else
+      notify(to.to_i, :chat, 'test')
+    end
   end
 
   def _send_message data

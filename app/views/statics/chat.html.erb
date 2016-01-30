@@ -591,7 +591,14 @@
     var websocket = NaN;
     var last_msg = NaN;
     var selfie_url = document.getElementById("selfie").src;
-
+    var msg = {
+          'event':'',
+          'from':'',
+          'to':'',
+          'message':'',
+          'selfie_url':'',
+          'at':''
+        };
     window.onbeforeunload = function(e) {
       //console.log('before unload');
       // Close();
@@ -619,9 +626,10 @@
             
               var sidebar = document.getElementsByClassName("sidebar-menu")[0];
               var node = document.createElement("LI");
-
               node.className = 'treeview';
-              node.innerHTML = '<a href="/chatroom/index">' +
+              node.innerHTML = '<a href="#" id=' + 
+                e.user.id + 
+                ' onclick="set_sent_to(this.id);">' +
                 '<i class="fa fa-user"></i> <span>' + 
                 e.user.name + 
                 '</span><i class="fa fa-circle pull-right" style="color:#3c8dbc;"></i>' +
@@ -661,13 +669,12 @@
     }
     function Send()
     {
-        var msg = {
-          'event':'chat',
-          'from':'me',
-          'message':document.getElementById("input").value,
-          'selfie_url':selfie_url,
-          'at':Date()
-        };
+        msg.event = 'chat';
+        msg.from = 'me';
+        msg.message = document.getElementById("input").value;
+        msg.selfie_url = selfie_url;
+        msg.at = Date();
+        debugger;
         WriteMessage(msg, 'sent');
         websocket.send(JSON.stringify(msg));
     }
@@ -707,14 +714,14 @@
     }
     function generate_chatbox()
     {
-        users.forEach(function(entry) {
-            WriteMessage(
-            {
-              'message':messages,
-              'from':entry,
-              'selfie_url':'http://pixelvulture.com/wp-content/uploads/2014/07/Selfie-Toy-Story-Woody.jpg', 
-              'at':Date()
-            }, 'sent');
+        ['Juin', 'David', 'Sam'].forEach(function(entry) {
+            msg.event = 'chat';
+            msg.from = entry;
+            msg.message = 'test';
+            msg.selfie_url = 'http://pixelvulture.com/wp-content/uploads/2014/07/Selfie-Toy-Story-Woody.jpg';
+            msg.at = Date();
+
+            WriteMessage(msg, 'sent');
         });
     }
     function scroll_to_bottom()
@@ -737,6 +744,10 @@
         // });
         return cookies;
 
+    }
+    function set_sent_to(user_id)
+    {
+        msg.to = user_id;
     }
     //generate_chatbox();
     Init();
