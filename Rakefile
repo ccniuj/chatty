@@ -3,6 +3,6 @@
 
 require File.expand_path('../config/application', __FILE__)
 require 'plezi/rake'
-require 'openssl'
+# require 'openssl'
 
 Rails.application.load_tasks
