@@ -5,7 +5,7 @@ require 'redis'
 if Rails.env.development? || Rails.env.test?
   ENV['PL_REDIS_URL'] = "redis://localhost:6379/0"
 else
-  ENV['PL_REDIS_URL'] = "redis://h:pen5qh7pprke508l59t5q4c7drf@ec2-54-83-39-131.compute-1.amazonaws.com:22859"
+  ENV['PL_REDIS_URL'] = "redis://h:p5c6slr2jt5uc16egm0jahrvmb3@ec2-54-227-246-40.compute-1.amazonaws.com:10929"
 end
 
 class ChatController
