@@ -15,6 +15,8 @@ class ChatController
   def before
     @current_user = get_user
     @connections = get_connections
+    @current_connection = get_current_connection
+    @other_connections = get_connections.reject{|c|c == @current_connection.first}
   end
 
   def index
@@ -68,13 +70,13 @@ class ChatController
       message:       greeting,
       event:         :chat,
       selfie_url:    @current_user.selfie_url,
-      connections:   @connections
+      connections:   @other_connections
     }
 
     response << message.to_json
 
     message[:message] = "#{@current_user.name}已加入對話"
-    message[:connections] = get_current_connection
+    message[:connections] = @current_connection
     broadcast :_send_message, message.to_json
   end
 

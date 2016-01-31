@@ -622,11 +622,13 @@
         websocket.onmessage = function(e) {
             var msg = JSON.parse(e.data);
             last_msg = msg;
+
+            $('.user_list').remove();
+
             msg.connections.forEach(function(e) {
-            
               var sidebar = document.getElementsByClassName("sidebar-menu")[0];
-              var node = document.createElement("LI");
-              node.className = 'treeview';
+              var node = document.createElement("li");
+              node.className = 'treeview user_list';
               node.innerHTML = '<a href="#" id=' + 
                 e.user.id + 
                 ' onclick="set_sent_to(this.id);">' +
