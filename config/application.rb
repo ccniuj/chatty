@@ -6,11 +6,11 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-# if Rails.const_defined?('API') || Rails.const_defined?('Console')
-#   Iodine.protocol = nil
-# elsif Rails.const_defined?('Server')
-#   # require_relative  '../app/sync/plezi_sync.rb'
-# end
+if Rails.const_defined?('API') || Rails.const_defined?('Console')
+  Iodine.protocol = nil
+elsif Rails.const_defined?('Server')
+  # require_relative  '../app/sync/plezi_sync.rb'
+end
 
 module Chatty
   class Application < Rails::Application
