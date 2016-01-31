@@ -12,13 +12,6 @@ elsif Rails.const_defined?('Server')
   # require_relative  '../app/sync/plezi_sync.rb'
 end
 
-module OpenSSL
-   module SSL
-       SSLErrorWaitReadable = IO::WaitReadable
-   end
-end
-require 'openssl'
-
 module Chatty
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
