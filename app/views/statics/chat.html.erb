@@ -298,24 +298,6 @@
                 <i class="fa fa-cloud"></i> <span>Chatty</span><i class="fa fa-circle pull-right" style="color:#3c8dbc;"></i>
               </a>
             </li>
-            <li class="treeview">
-              <a href="#">
-                <i class="fa fa-files-o"></i>
-                <span>Layout Options</span>
-                <span class="label label-primary pull-right">4</span>
-              </a>
-              <ul class="treeview-menu">
-                <li><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Top Navigation</a></li>
-                <li><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Boxed</a></li>
-                <li><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Fixed</a></li>
-                <li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Collapsed Sidebar</a></li>
-              </ul>
-            </li>
-            <li>
-              <a href="#">
-                <i class="fa fa-th"></i> <span>Widgets</span> <small class="label pull-right bg-green">new</small>
-              </a>
-            </li>
           </ul>
         </section>
         <!-- /.sidebar -->
@@ -325,13 +307,6 @@
       <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
-          <h1>
-            聊天室
-          </h1>
-          <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active">Dashboard</li>
-          </ol>
         </section>
 
         <!-- Main content -->
@@ -348,7 +323,7 @@
               <div class="box box-success">
                 <div class="box-header">
                   <i class="fa fa-comments-o"></i>
-                  <h3 class="box-title">Chat</h3>
+                  <h3 class="box-title">Chatty</h3>
                   <div class="box-tools pull-right" data-toggle="tooltip" title="Status">
                     <div class="btn-group" data-toggle="btn-toggle" >
                       <button type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-green"></i></button>
@@ -614,20 +589,26 @@
         websocket.onopen = function(e) { 
             //update_status();
             //WriteStatus({'message':'Connected :)'});
+            $('.user_list').remove();
         };
         websocket.onclose = function(e) { 
           // websocket = NaN; update_status(); 
           // console.log('closed!!!');
         };
         websocket.onmessage = function(e) {
+            debugger;
             var msg = JSON.parse(e.data);
             last_msg = msg;
 
-            $('.user_list').remove();
-
-            msg.connections.forEach(function(e) {
-              update_user_list(e);
-            });
+            if (typeof(msg.connections.close) == 'undefined')
+            {
+              msg.connections.forEach(function(e) {
+                update_user_list(e);
+              });
+            } else {
+              delete_offline_user(msg.connections.close[0].user.id);
+            }
+            
             if(msg.event == 'chat') WriteMessage(msg, 'received');
             if(msg.event == 'error') WriteStatus(msg);
         };
@@ -648,8 +629,9 @@
       node.style.color = '#b8c7ce';
       sidebar.appendChild(node);
     }
-    function locate_active_node ()
+    function delete_offline_user (user_id)
     {
+      $("a#" + user_id).remove();
     }
     function WriteMessage( message, message_type)
     {
@@ -683,13 +665,11 @@
         msg.message = document.getElementById("input").value;
         msg.selfie_url = selfie_url;
         msg.at = Date();
-        debugger;
         WriteMessage(msg, 'sent');
         websocket.send(JSON.stringify(msg));
     }
     function Close()
     {
-        debugger;
         console.log('closd is called');
         websocket.close('1000', 'Close normally.');
     }

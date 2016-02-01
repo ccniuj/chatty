@@ -392,6 +392,9 @@ function _init() {
       var $this = $(this);
       $("li.active").removeClass('active');
       $this.parent("li").addClass('active');
+      var title = $this.find('span').html();
+      $('.box-title').html(title);
+      $('.item').remove();
       //Fix the layout in case the sidebar stretches over the height of the window
       _this.layout.fix();
 

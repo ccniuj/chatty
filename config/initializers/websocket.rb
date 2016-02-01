@@ -87,7 +87,7 @@ class ChatController
       at:            Time.now,
       message:       "#{@current_user.name}已離開對話",
       selfie_url:    @current_user.selfie_url,
-      connections:   @connections
+      connections:   {'close' => @current_connection}
     }
     close
     p 'plezi close websocket'
