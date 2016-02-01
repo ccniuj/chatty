@@ -294,11 +294,11 @@
           <ul class="sidebar-menu">
             <li class="header">MAIN NAVIGATION</li>
             <li class="active treeview">
-              <a href="/chatroom/index">
+              <a href="#">
                 <i class="fa fa-cloud"></i> <span>Chatty</span><i class="fa fa-circle pull-right" style="color:#3c8dbc;"></i>
               </a>
             </li>
-            <!-- <li class="treeview">
+            <li class="treeview">
               <a href="#">
                 <i class="fa fa-files-o"></i>
                 <span>Layout Options</span>
@@ -312,10 +312,10 @@
               </ul>
             </li>
             <li>
-              <a href="pages/widgets.html">
+              <a href="#">
                 <i class="fa fa-th"></i> <span>Widgets</span> <small class="label pull-right bg-green">new</small>
               </a>
-            </li> -->
+            </li>
           </ul>
         </section>
         <!-- /.sidebar -->
@@ -582,7 +582,7 @@
     <!-- FastClick -->
     <script src="/template/plugins/fastclick/fastclick.min.js"></script>
     <!-- AdminLTE App -->
-    <script src="/template/dist/js/app.min.js"></script>
+    <script src="/template/dist/js/app.js"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="/template/dist/js/pages/dashboard.js"></script>
     <!-- AdminLTE for demo purposes -->
@@ -626,23 +626,30 @@
             $('.user_list').remove();
 
             msg.connections.forEach(function(e) {
-              var sidebar = document.getElementsByClassName("sidebar-menu")[0];
-              var node = document.createElement("li");
-              node.className = 'treeview user_list';
-              node.innerHTML = '<a href="#" id=' + 
-                e.user.id + 
-                ' onclick="set_sent_to(this.id);">' +
-                '<i class="fa fa-user"></i> <span>' + 
-                e.user.name + 
-                '</span><i class="fa fa-circle pull-right" style="color:#3c8dbc;"></i>' +
-                '</a>'
-              node.style.color = '#b8c7ce';
-              sidebar.appendChild(node);
+              update_user_list(e);
             });
             if(msg.event == 'chat') WriteMessage(msg, 'received');
             if(msg.event == 'error') WriteStatus(msg);
         };
         // websocket.onerror = function(e) { websocket = NaN; update_status(); };
+    }
+    function update_user_list(msg)
+    {
+      var sidebar = document.getElementsByClassName("sidebar-menu")[0];
+      var node = document.createElement("li");
+      node.className = 'treeview user_list';
+      node.innerHTML = '<a href="#" id=' + 
+        msg.user.id + 
+        ' onclick="set_sent_to(this.id);">' +
+        '<i class="fa fa-user"></i> <span>' + 
+        msg.user.name + 
+        '</span><i class="fa fa-circle pull-right" style="color:#3c8dbc;"></i>' +
+        '</a>';
+      node.style.color = '#b8c7ce';
+      sidebar.appendChild(node);
+    }
+    function locate_active_node ()
+    {
     }
     function WriteMessage( message, message_type)
     {
