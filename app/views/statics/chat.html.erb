@@ -294,7 +294,7 @@
           <ul class="sidebar-menu">
             <li class="header">MAIN NAVIGATION</li>
             <li class="active treeview">
-              <a href="#">
+              <a href="#" onclick="set_sent_to('Chatty');">
                 <i class="fa fa-cloud"></i> <span>Chatty</span><i class="fa fa-circle pull-right" style="color:#3c8dbc;"></i>
               </a>
             </li>
@@ -569,7 +569,7 @@
     var msg = {
           'event':'',
           'from':'',
-          'to':'',
+          'to':'Chatty',
           'message':'',
           'selfie_url':'',
           'at':''
@@ -579,6 +579,7 @@
       // Close();
       // return 'Dialog text here.';
     };
+    var message_queue = {};
 
     function Connect() {
         websocket = new WebSocket( (window.location.protocol.indexOf('https') < 0 ? 'ws' : 'wss') + '://' + window.location.hostname + (window.location.port == '' ? '' : (':' + window.location.port) ) + "/chatroom/");
@@ -596,7 +597,6 @@
           // console.log('closed!!!');
         };
         websocket.onmessage = function(e) {
-            debugger;
             var msg = JSON.parse(e.data);
             last_msg = msg;
 
@@ -608,9 +608,23 @@
             } else {
               delete_offline_user(msg.connections.close[0].user.id);
             }
-            
-            if(msg.event == 'chat') WriteMessage(msg, 'received');
-            if(msg.event == 'error') WriteStatus(msg);
+
+            // if(msg.to == 'Chatty') {
+            //   if (find_active_user_name() == 'Chatty') {
+            //     if(msg.event == 'chat') WriteMessage(msg, 'received');
+            //     if(msg.event == 'error') WriteStatus(msg);
+            //   } else {
+            //     update_message_queue(msg);
+            //   }
+            // } else {
+            //   if(msg.from == find_active_user_name()) {
+            //     if(msg.event == 'chat') WriteMessage(msg, 'received');
+            //     if(msg.event == 'error') WriteStatus(msg);
+            //   } else {
+            //     update_message_queue(msg);
+            //   }
+            // }
+
         };
         // websocket.onerror = function(e) { websocket = NaN; update_status(); };
     }
@@ -633,6 +647,30 @@
     {
       $("a#" + user_id).remove();
     }
+    function find_active_user_name()
+    {
+      return $('.active').find('span').html();
+    }
+    // function update_message_queue(msg_obj)
+    // {
+    //   var li =  $('.treeview:contains("' + msg_obj.from + '")');
+
+    //   if(typeof(message_queue[msg_obj.from])=='undefined') {
+    //     li.find('i.fa-circle').last().remove();
+    //     message_queue[msg_obj.from] = [msg_obj.message];
+    //     debugger;
+    //   } else {
+    //     li.find('span.label').last().remove();
+    //     message_queue[msg_obj.from].push(msg_obj);
+    //   }
+
+    //   var span = document.createElement('span');
+    //   span.className = 'label label-primary pull-right';
+    //   span.innerHTML = message_queue[msg_obj.from].count;
+    //   li.children('a').append(span);
+
+    //   debugger;
+    // }
     function WriteMessage( message, message_type)
     {
         var html = '<img src="' +

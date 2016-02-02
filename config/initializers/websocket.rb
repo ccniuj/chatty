@@ -35,17 +35,18 @@ class ChatController
 
     message = {
       event: :chat,
-      from: @current_user.name,
       message: data["message"],
+      from: @current_user.name,
+      to: data["to"],
       selfie_url: @current_user.selfie_url,
       at: Time.now,
       connections: []
     }
-    to = data["to"]
-    if to.empty?
+
+    if (message[:to] == 'Chatty')
       broadcast :_send_message, message.to_json
     else
-      notify(to.to_i, :_send_message, message.to_json)
+      notify(message[:to], :_send_message, message.to_json)
     end
   end
 
@@ -65,7 +66,7 @@ class ChatController
     
     greeting = "你好，#{@current_user.name}！今天想聊些什麼？"
     message = {
-      from:          '',
+      from:          'Chatty',
       at:            Time.now,
       message:       greeting,
       event:         :chat,
@@ -83,7 +84,7 @@ class ChatController
   def on_close
     message = {
       event:         :chat,
-      from:          '',
+      from:          'Chatty',
       at:            Time.now,
       message:       "#{@current_user.name}已離開對話",
       selfie_url:    @current_user.selfie_url,
