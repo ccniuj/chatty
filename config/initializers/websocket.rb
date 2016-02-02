@@ -10,6 +10,16 @@ end
 
 class ChatController
   @auto_dispatch = true
+  Message = {
+    event:         '',
+    from:          '',
+    channel:       '',
+    at:            Time.now,
+    message:       "",
+    selfie_url:    "",
+    connections:   []
+  }
+  
   # the index will answer '/'
   # a regular method will answer it's own name i.e. '/foo'
   def before
@@ -25,28 +35,6 @@ class ChatController
   end
 
   def on_message data
-    begin
-      data = JSON.parse data
-    rescue Exception => e
-      response << {event: :error, message: "Unknown Error"}.to_json
-      close
-      return false
-    end
-    binding.pry
-    message = {
-      event: :chat,
-      message: data["message"],
-      from: @current_user.name,
-      to: data["to"],
-      selfie_url: @current_user.selfie_url,
-      at: Time.now,
-      connections: []
-    }
-    if (message[:to] == 'Chatty')
-      broadcast :_send_message, message.to_json
-    else
-      notify(message[:to], :_send_message, message.to_json)
-    end
   end
 
   def _send_message data
@@ -54,43 +42,32 @@ class ChatController
   end
 
   def on_open
-    # if params[:id].nil?
-    #   response << {event: :error, from: :system, at: Time.now, message:   "Error: cannot connect without a nickname!"}.to_json
-    #   close
-    #   return false
-    # end
-
     register_as @current_user.id
-    # notify user_id, :event_name, "string data", hash: :data, more_hash: :data
     
     greeting = "你好，#{@current_user.name}！今天想聊些什麼？"
-    message = {
-      from:          'Chatty',
-      at:            Time.now,
-      message:       greeting,
-      event:         :chat,
-      selfie_url:    @current_user.selfie_url,
-      connections:   @other_connections
-    }
-    response << message.to_json
+    Message[:event] = "public"
+    Message[:from] = "Chatty"
+    Message[:message] = greeting
+    Message[:selfie_url] = @current_user.selfie_url
+    Message[:connections] = @other_connections
 
-    message[:message] = "#{@current_user.name}已加入對話"
-    message[:connections] = @current_connection
-    broadcast :_send_message, message.to_json
+    response << Message.to_json
+
+    Message[:message] = "#{@current_user.name}已加入對話"
+    Message[:connections] = @current_connection
+    broadcast :_send_message, Message.to_json
   end
 
   def on_close
-    message = {
-      event:         :chat,
-      from:          'Chatty',
-      at:            Time.now,
-      message:       "#{@current_user.name}已離開對話",
-      selfie_url:    @current_user.selfie_url,
-      connections:   {'close' => @current_connection}
-    }
+    Message[:event] = "close"
+    Message[:from] = "Chatty"
+    Message[:message] = "#{@current_user.name}已離開對話"
+    Message[:selfie_url] = @current_user.selfie_url
+    Message[:connections] = @current_connection
+
     close
     p 'plezi close websocket'
-    broadcast :_send_message, message.to_json
+    broadcast :_send_message, Message.to_json
   end
 
   def _ask_nickname
@@ -125,9 +102,39 @@ class ChatController
   end
 
   # event handler
-  protected
-  def chat data
-    
+
+  def public data
+    begin
+      _init_message(data)
+      broadcast :_send_message, Message.to_json
+    rescue Exception => e
+      response << {event: :error, message: "Unknown Error"}.to_json
+      close
+      return false
+    end
+  end
+
+  def group data
+  end
+
+  def private data
+    begin
+      _init_message(data)
+      notify(Message[:channel], :_send_message, Message.to_json)
+    rescue Exception => e
+      response << {event: :error, message: "Unknown Error"}.to_json
+      close
+      return false
+    end
+  end
+
+  private 
+  def _init_message data
+    Message[:event] = data["event"]
+    Message[:message] = data["message"]
+    Message[:from] = @current_user.name
+    Message[:channel] = data["channel"]
+    Message[:selfie_url] = @current_user.selfie_url
   end
 end
 

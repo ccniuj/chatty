@@ -4,7 +4,7 @@ var selfie_url = document.getElementById("selfie").src;
 var msg = {
       'event':'',
       'from':'',
-      'to':'Chatty',
+      'channel':'Chatty',
       'message':'',
       'selfie_url':'',
       'at':''
@@ -50,17 +50,17 @@ function Init()
               delete_offline_user(msg.connections.close[0].user.id);
             }
 
-            if(msg.to == 'Chatty') {
-              if (find_active_user_name() == 'Chatty') {
-                if(msg.event == 'chat') WriteMessage(msg, 'received');
-                if(msg.event == 'error') WriteStatus(msg);
+            if(msg.event == 'public') {
+              if (find_active_user().name == 'Chatty') {
+                WriteMessage(msg, 'received');
+                //if(msg.event == 'error') WriteStatus(msg);
               } else {
                 update_message_queue(msg);
               }
             } else {
-              if(msg.from == find_active_user_name()) {
-                if(msg.event == 'chat') WriteMessage(msg, 'received');
-                if(msg.event == 'error') WriteStatus(msg);
+              if(msg.from == find_active_user().name) {
+                if(msg.event == 'private') WriteMessage(msg, 'received');
+                //if(msg.event == 'error') WriteStatus(msg);
               } else {
                 update_message_queue(msg);
               }
@@ -76,7 +76,7 @@ function Init()
       node.className = 'treeview user_list';
       node.innerHTML = '<a href="#" id=' + 
         msg.user.id + 
-        ' onclick="set_sent_to(this.id);">' +
+        '>' +
         '<i class="fa fa-user"></i> <span>' + 
         msg.user.name + 
         '</span><i class="fa fa-circle pull-right" style="color:#3c8dbc;"></i>' +
@@ -88,9 +88,9 @@ function delete_offline_user (user_id)
 {
   $("a#" + user_id).remove();
 }
-function find_active_user_name()
+function find_active_user()
 {
-  return $('.active').find('span').html();
+  return {'name': $('.active').find('span').html(), 'channel': $('.active').children('a').attr('id') };
 }
 
     function update_message_queue(msg_obj)
@@ -139,13 +139,21 @@ function WriteStatus( message )
 }
 function Send()
 {
-    msg.event = 'chat';
-    msg.from = 'me';
-    msg.message = document.getElementById("input").value;
-    msg.selfie_url = selfie_url;
-    msg.at = Date();
-    WriteMessage(msg, 'sent');
-    websocket.send(JSON.stringify(msg));
+
+  msg.channel = find_active_user().channel;
+
+  if (msg.channel=="chatty") {
+		msg.event = 'public'
+	} else {
+		msg.event = 'private'
+	}
+
+  msg.message = document.getElementById("input").value;
+  msg.selfie_url = selfie_url;
+  msg.at = Date();
+  WriteMessage(msg, 'sent');
+  debugger;
+  websocket.send(JSON.stringify(msg));
 }
 function Close()
 {
@@ -180,26 +188,22 @@ function on_submit()
     }
     document.getElementById("input").value = ""
 }
-function generate_chatbox()
-{
-    ['Juin', 'David', 'Sam'].forEach(function(entry) {
-        msg.event = 'chat';
-        msg.from = entry;
-        msg.message = 'test';
-        msg.selfie_url = 'http://pixelvulture.com/wp-content/uploads/2014/07/Selfie-Toy-Story-Woody.jpg';
-        msg.at = Date();
+// function generate_chatbox()
+// {
+//     ['Juin', 'David', 'Sam'].forEach(function(entry) {
+//         msg.event = 'chat';
+//         msg.from = entry;
+//         msg.message = 'test';
+//         msg.selfie_url = 'http://pixelvulture.com/wp-content/uploads/2014/07/Selfie-Toy-Story-Woody.jpg';
+//         msg.at = Date();
 
-        WriteMessage(msg, 'sent');
-    });
-}
+//         WriteMessage(msg, 'sent');
+//     });
+// }
 function scroll_to_bottom()
 {
     var scrollTo_val = $('#chat-box').prop('scrollHeight');
     $('#chat-box').slimScroll({ scrollTo: scrollTo_val, height: '410px' });
-}
-function set_sent_to(user_id)
-{
-  msg.to = user_id;
 }
 //generate_chatbox();
 Init();
