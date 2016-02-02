@@ -40,14 +40,13 @@ function Init()
         var msg = JSON.parse(e.data);
         last_msg = msg;
 
-					debugger;
-            if (typeof(msg.connections.close) == 'undefined')
+            if (msg.event == 'close')
             {
+              delete_offline_user(msg.connections[0].user.id);
+            } else {
               msg.connections.forEach(function(e) {
                 update_user_list(e);
               });
-            } else {
-              delete_offline_user(msg.connections.close[0].user.id);
             }
 
             if(msg.event == 'public') {
@@ -152,7 +151,6 @@ function Send()
   msg.selfie_url = selfie_url;
   msg.at = Date();
   WriteMessage(msg, 'sent');
-  debugger;
   websocket.send(JSON.stringify(msg));
 }
 function Close()
