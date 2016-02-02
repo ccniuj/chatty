@@ -46,6 +46,7 @@ group :development do
 end
 
 gem 'plezi'
+gem 'iodine', :path => 'vendor/iodine_patch'
 gem 'pry'
 gem 'devise'
 gem 'awesome_print'
