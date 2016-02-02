@@ -66,7 +66,10 @@ module Iodine
 				end
 				@ws_extentions.each { |ex| ext |= ex.edit_frame data } if @ws_extentions
 				header = ( (fin ? 0b10000000 : 0) | (op_code & 0b00001111) | ext).chr.force_encoding(::Encoding::ASCII_8BIT)
-
+				p "#{byte_size}"
+				p "#{byte_size.class}"
+				p "#{byte_size.bit_length}"
+				
 				if byte_size < 125
 					header << byte_size.chr
 				elsif byte_size.bit_length <= 16					

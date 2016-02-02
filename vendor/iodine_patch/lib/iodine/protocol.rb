@@ -112,8 +112,9 @@ module Iodine
 			touch
 			ssl? ? read_ssl(size) : @io.read_nonblock( size , Thread.current[:buffer] )
 			# @io.read_nonblock( size  ) # this one is a bit slower...
-		# rescue OpenSSL::SSL::SSLErrorWaitReadable, IO::WaitReadable, IO::WaitWritable
-		# 	nil
+		rescue IO::WaitReadable, IO::WaitWritable #, OpenSSL::SSL::SSLErrorWaitReadable
+			p 'resue'
+			nil
 		rescue IOError, Errno::ECONNRESET
 			close
 		rescue => e
@@ -227,8 +228,8 @@ module Iodine
 				data = String.new
 				begin
 					 (data << @io.read_nonblock(size, Thread.current[:buffer]).to_s) until data.bytesize >= size
-				# rescue OpenSSL::SSL::SSLErrorWaitReadable, IO::WaitReadable, IO::WaitWritable
-
+				rescue IO::WaitReadable, IO::WaitWritable #, OpenSSL::SSL::SSLErrorWaitReadable
+					p 'rescue'
 				rescue IOError
 					close
 				rescue => e

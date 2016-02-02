@@ -609,21 +609,21 @@
               delete_offline_user(msg.connections.close[0].user.id);
             }
 
-            // if(msg.to == 'Chatty') {
-            //   if (find_active_user_name() == 'Chatty') {
-            //     if(msg.event == 'chat') WriteMessage(msg, 'received');
-            //     if(msg.event == 'error') WriteStatus(msg);
-            //   } else {
-            //     update_message_queue(msg);
-            //   }
-            // } else {
-            //   if(msg.from == find_active_user_name()) {
-            //     if(msg.event == 'chat') WriteMessage(msg, 'received');
-            //     if(msg.event == 'error') WriteStatus(msg);
-            //   } else {
-            //     update_message_queue(msg);
-            //   }
-            // }
+            if(msg.to == 'Chatty') {
+              if (find_active_user_name() == 'Chatty') {
+                if(msg.event == 'chat') WriteMessage(msg, 'received');
+                if(msg.event == 'error') WriteStatus(msg);
+              } else {
+                update_message_queue(msg);
+              }
+            } else {
+              if(msg.from == find_active_user_name()) {
+                if(msg.event == 'chat') WriteMessage(msg, 'received');
+                if(msg.event == 'error') WriteStatus(msg);
+              } else {
+                update_message_queue(msg);
+              }
+            }
 
         };
         // websocket.onerror = function(e) { websocket = NaN; update_status(); };
@@ -651,26 +651,24 @@
     {
       return $('.active').find('span').html();
     }
-    // function update_message_queue(msg_obj)
-    // {
-    //   var li =  $('.treeview:contains("' + msg_obj.from + '")');
+    function update_message_queue(msg_obj)
+    {
+      var li =  $('.treeview:contains("' + msg_obj.from + '")');
 
-    //   if(typeof(message_queue[msg_obj.from])=='undefined') {
-    //     li.find('i.fa-circle').last().remove();
-    //     message_queue[msg_obj.from] = [msg_obj.message];
-    //     debugger;
-    //   } else {
-    //     li.find('span.label').last().remove();
-    //     message_queue[msg_obj.from].push(msg_obj);
-    //   }
+      if(typeof(message_queue[msg_obj.from])=='undefined') {
+        li.find('i.fa-circle').last().remove();
+        message_queue[msg_obj.from] = [msg_obj.message];
+      } else {
+        li.find('span.label').last().remove();
+        message_queue[msg_obj.from].push(msg_obj);
+      }
 
-    //   var span = document.createElement('span');
-    //   span.className = 'label label-primary pull-right';
-    //   span.innerHTML = message_queue[msg_obj.from].count;
-    //   li.children('a').append(span);
+      var span = document.createElement('span');
+      span.className = 'label label-primary pull-right';
+      span.innerHTML = message_queue[msg_obj.from].count;
+      li.children('a').append(span);
 
-    //   debugger;
-    // }
+    }
     function WriteMessage( message, message_type)
     {
         var html = '<img src="' +
