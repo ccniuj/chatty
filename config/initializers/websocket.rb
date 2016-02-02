@@ -9,7 +9,7 @@ else
 end
 
 class ChatController
-
+  @auto_dispatch = true
   # the index will answer '/'
   # a regular method will answer it's own name i.e. '/foo'
   def before
@@ -32,7 +32,7 @@ class ChatController
       close
       return false
     end
-
+    binding.pry
     message = {
       event: :chat,
       message: data["message"],
@@ -42,7 +42,6 @@ class ChatController
       at: Time.now,
       connections: []
     }
-
     if (message[:to] == 'Chatty')
       broadcast :_send_message, message.to_json
     else
@@ -73,7 +72,6 @@ class ChatController
       selfie_url:    @current_user.selfie_url,
       connections:   @other_connections
     }
-
     response << message.to_json
 
     message[:message] = "#{@current_user.name}已加入對話"
@@ -125,6 +123,12 @@ class ChatController
       connection['user'].id == @current_user.id
     end
   end
+
+  # event handler
+  protected
+  def chat data
+    
+  end
 end
 
 # Using pathname extentions for setting public folder
@@ -144,3 +148,4 @@ service_options = {
 Plezi.host service_options
 
 route '/chatroom/(:id)', ChatController
+# route '/client.js', :client

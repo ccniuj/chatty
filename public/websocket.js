@@ -40,6 +40,7 @@ function Init()
         var msg = JSON.parse(e.data);
         last_msg = msg;
 
+					debugger;
             if (typeof(msg.connections.close) == 'undefined')
             {
               msg.connections.forEach(function(e) {
@@ -198,7 +199,7 @@ function scroll_to_bottom()
 }
 function set_sent_to(user_id)
 {
-    msg.to = user_id;
+  msg.to = user_id;
 }
 //generate_chatbox();
 Init();
