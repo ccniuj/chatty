@@ -23,10 +23,7 @@ class ChatController
   # the index will answer '/'
   # a regular method will answer it's own name i.e. '/foo'
   def before
-    @current_user = get_user
-    @connections = get_connections
-    @current_connection = get_current_connection
-    @other_connections = get_connections.reject{|c|c == @current_connection.first}
+    _init_env
   end
 
   def index
@@ -42,8 +39,12 @@ class ChatController
   end
 
   def on_open
-    register_as @current_user.id
+    _register_connection(@current_user.id, cookies[:rails_uuid], cookies[:_chatty_session])
     
+    @current_connection = get_current_connection(@current_user.id)
+    @other_connections = get_connections.reject{|c|c == @current_connection.first}
+
+    register_as @current_user.id
     greeting = "你好，#{@current_user.name}！今天想聊些什麼？"
     Message[:event] = "open"
     Message[:from] = "Chatty"
@@ -60,12 +61,14 @@ class ChatController
   end
 
   def on_close
+    @current_connection = get_current_connection(@current_user.id)
+    @other_connections = get_connections.reject{|c|c == @current_connection.first}
     Message[:event] = "close"
     Message[:from] = "Chatty"
     Message[:message] = "#{@current_user.name}已離開對話"
     Message[:selfie_url] = @current_user.selfie_url
     Message[:connections] = @current_connection
-
+    _unregister_connection(@current_user.id)
     close
     p 'plezi close websocket'
     broadcast :_send_message, Message.to_json
@@ -73,6 +76,13 @@ class ChatController
 
   def _ask_nickname
       return params[:id]
+  end
+
+  def _init_env
+    @current_user = get_user
+    @connections = get_connections
+    # @current_connection = get_current_connection(@current_user.id)
+    # @other_connections = get_connections.reject{|c|c == @current_connection.first} if get_current_connection(@current_user.id)
   end
 
   def get_user
@@ -84,22 +94,25 @@ class ChatController
 
     values = user_session['warden.user.user.key']
     uid = values.flatten.first
-    User.find(uid)
+    User.select('id, name, email, selfie_url').find(uid)
   end
 
   def get_connections
-    connections = ObjectSpace.each_object(Plezi::Base::WSObject).to_a.map do |connection|
-      {'uuid' => connection.cookies['rails_uuid'], 'user' => connection.get_user}
-    end.
-    uniq
+    Connection.all.map{|c|{'uuid' => c.uuid, 'user' => User.find(c.user_id)}}.uniq
+    # connections = ObjectSpace.each_object(Plezi::Base::WSObject).to_a.map do |connection|
+    #   {'uuid' => connection.cookies['rails_uuid'], 'user' => connection.get_user}
+    # end.
+    # uniq
   end
 
-  def get_current_connection
-    @connections ||= get_connections
-    @current_user ||= get_user
-    @connections.select do |connection|
-      connection['user'].id == @current_user.id
-    end
+  def get_current_connection(user_id)
+    c = Connection.find_by(:user_id => user_id)
+    c ? [{'uuid' => c.uuid, 'user' => User.find(user_id)}] : []
+    # @connections ||= get_connections
+    # @current_user ||= get_user
+    # @connections.select do |connection|
+    #   connection['user'].id == @current_user.id
+    # end
   end
 
   # event handler
@@ -137,6 +150,18 @@ class ChatController
     Message[:channel] = data["channel"]
     Message[:selfie_url] = @current_user.selfie_url
     Message[:at] = data["at"]
+  end
+
+  def _register_connection(user_id, uuid, session_id)
+    Connection.create(
+      :user_id => user_id,
+      :uuid => uuid,
+      :session_id => session_id
+    )
+  end
+
+  def _unregister_connection(user_id)
+    Connection.where(:user_id => user_id).each{|c|c.destroy}
   end
 end
 

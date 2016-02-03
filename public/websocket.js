@@ -47,6 +47,7 @@ function Init()
         WriteMessage(msg, 'received');        
       }
       if (msg.event == 'close') {
+        debugger;
         delete_offline_user(msg.connections[0].user.id);
         WriteMessage(msg, 'received');
       } 
