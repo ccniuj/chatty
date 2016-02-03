@@ -96,19 +96,18 @@ function find_active_user()
 
 function update_message_queue(msg_obj, channel)
 {
-  // var li_from = $('.treeview:contains("Chatty")');
-  var li_channel = $('#'+channel);
+  var li_from = $('.treeview:contains("' + channel + '")');
   if(typeof(message_queue[msg_obj.from])=='undefined') {
-    li_channel.find('i.fa-circle').last().remove();
+    li_from.find('i.fa-circle').last().remove();
     message_queue[msg_obj.from] = [msg_obj.message];
   } else {
-    li_channel.find('span.label').last().remove();
+    li_from.find('span.label').last().remove();
     message_queue[msg_obj.from].push(msg_obj);
   }
   var span = document.createElement('span');
   span.className = 'label label-primary pull-right';
   span.innerHTML = message_queue[msg_obj.from].count;
-  li_channel.children('a').append(span);
+  li_from.children('a').append(span);
   debugger;
 }
 
@@ -158,7 +157,7 @@ function Send()
 
   msg.channel = find_active_user().channel;
 
-  if (msg.channel=="chatty") {
+  if (msg.channel=="Chatty") {
 		msg.event = 'public'
 	} else {
 		msg.event = 'private'
