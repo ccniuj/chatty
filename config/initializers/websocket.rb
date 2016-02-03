@@ -45,7 +45,7 @@ class ChatController
     register_as @current_user.id
     
     greeting = "你好，#{@current_user.name}！今天想聊些什麼？"
-    Message[:event] = "public"
+    Message[:event] = "open"
     Message[:from] = "Chatty"
     Message[:message] = greeting
     Message[:selfie_url] = @current_user.selfie_url
@@ -53,6 +53,7 @@ class ChatController
 
     response << Message.to_json
 
+    Message[:event] = "join"
     Message[:message] = "#{@current_user.name}已加入對話"
     Message[:connections] = @current_connection
     broadcast :_send_message, Message.to_json

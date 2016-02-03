@@ -37,37 +37,39 @@ function Init()
       // console.log('closed!!!');
     };
     websocket.onmessage = function(e) {
-        var msg = JSON.parse(e.data);
-        last_msg = msg;
-
-            if (msg.event == 'close')
-            {
-              delete_offline_user(msg.connections[0].user.id);
-            } else {
-              msg.connections.forEach(function(e) {
-                update_user_list(e);
-              });
-            }
-
-            if(msg.event == 'public') {
-              if (find_active_user().name == 'Chatty') {
-                WriteMessage(msg, 'received');
-                //if(msg.event == 'error') WriteStatus(msg);
-              } else {
-                update_message_queue(msg);
-              }
-            } else {
-              if(msg.from == find_active_user().name) {
-                if(msg.event == 'private') WriteMessage(msg, 'received');
-                //if(msg.event == 'error') WriteStatus(msg);
-              } else {
-                update_message_queue(msg);
-              }
-            }
-
-        };
+      var msg = JSON.parse(e.data);
+      last_msg = msg;
+      if ((msg.event == 'open') || (msg.event == 'join')) {
+        msg.connections.forEach(function(e) {
+          update_user_list(e);
+        });
+        WriteMessage(msg, 'received');        
+      }
+      if (msg.event == 'close') {
+        delete_offline_user(msg.connections[0].user.id);
+        WriteMessage(msg, 'received');
+      } 
+      if (msg.event == 'public') {
+        if (find_active_user().channel == msg.channel) {
+          debugger;
+          WriteMessage(msg, 'received');
+        } else {
+        	debugger;
+          update_message_queue(msg, msg.channel);
+        }
+      }
+      if (msg.event == 'private') {
+        if (find_active_user().name == msg.from) {
+          debugger;
+          WriteMessage(msg, 'received');
+        } else {
+          debugger;
+          update_message_queue(msg, msg.from);
+        }
+      }
+    };
         // websocket.onerror = function(e) { websocket = NaN; update_status(); };
-    }
+}
     function update_user_list(msg)
     {
       var sidebar = document.getElementsByClassName("sidebar-menu")[0];
@@ -92,24 +94,39 @@ function find_active_user()
   return {'name': $('.active').find('span').html(), 'channel': $('.active').children('a').attr('id') };
 }
 
-    function update_message_queue(msg_obj)
-    {
-      var li =  $('.treeview:contains("' + msg_obj.from + '")');
+function update_message_queue(msg_obj, channel)
+{
+  // var li_from = $('.treeview:contains("Chatty")');
+  var li_channel = $('#'+channel);
+  if(typeof(message_queue[msg_obj.from])=='undefined') {
+    li_channel.find('i.fa-circle').last().remove();
+    message_queue[msg_obj.from] = [msg_obj.message];
+  } else {
+    li_channel.find('span.label').last().remove();
+    message_queue[msg_obj.from].push(msg_obj);
+  }
+  var span = document.createElement('span');
+  span.className = 'label label-primary pull-right';
+  span.innerHTML = message_queue[msg_obj.from].count;
+  li_channel.children('a').append(span);
+  debugger;
+}
 
-      if(typeof(message_queue[msg_obj.from])=='undefined') {
-        li.find('i.fa-circle').last().remove();
-        message_queue[msg_obj.from] = [msg_obj.message];
-      } else {
-        li.find('span.label').last().remove();
-        message_queue[msg_obj.from].push(msg_obj);
-      }
-
-      var span = document.createElement('span');
-      span.className = 'label label-primary pull-right';
-      span.innerHTML = message_queue[msg_obj.from].count;
-      li.children('a').append(span);
-
-    }
+function update_private_message_queue(msg_obj)
+{
+  var li_from = $('.treeview:contains("' + msg_obj.from + '")');
+  if(typeof(message_queue[msg_obj.from])=='undefined') {
+    li_from.find('i.fa-circle').last().remove();
+    message_queue[msg_obj.from] = [msg_obj.message];
+  } else {
+    li_from.find('span.label').last().remove();
+    message_queue[msg_obj.from].push(msg_obj);
+  }
+  var span = document.createElement('span');
+  span.className = 'label label-primary pull-right';
+  span.innerHTML = message_queue[msg_obj.from].count;
+  li_from.children('a').append(span);
+}
 
 function WriteMessage( message, message_type)
 {
