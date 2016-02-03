@@ -136,6 +136,7 @@ class ChatController
     Message[:from] = @current_user.name
     Message[:channel] = data["channel"]
     Message[:selfie_url] = @current_user.selfie_url
+    Message[:at] = data["at"]
   end
 end
 

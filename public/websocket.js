@@ -1,6 +1,7 @@
 var websocket = NaN;
 var last_msg = NaN;
 var selfie_url = document.getElementById("selfie").src;
+var current_user_name = $('.info').children('p').html();
 var msg = {
       'event':'',
       'from':'',
@@ -51,19 +52,15 @@ function Init()
       } 
       if (msg.event == 'public') {
         if (find_active_user().channel == msg.channel) {
-          debugger;
           WriteMessage(msg, 'received');
         } else {
-        	debugger;
           update_message_queue(msg, msg.channel);
         }
       }
       if (msg.event == 'private') {
         if (find_active_user().name == msg.from) {
-          debugger;
           WriteMessage(msg, 'received');
         } else {
-          debugger;
           update_message_queue(msg, msg.from);
         }
       }
@@ -96,8 +93,6 @@ function find_active_user()
 
 function update_message_queue(msg_obj, channel)
 {
-
-
   var li_from = $('.treeview:contains("' + channel + '")');
   var key = '';
   
@@ -117,9 +112,8 @@ function update_message_queue(msg_obj, channel)
 
   var span = document.createElement('span');
   span.className = 'label label-primary pull-right';
-  span.innerHTML = message_queue[msg_obj.event][key].count;
+  span.innerHTML = message_queue[msg_obj.event][key].length;
   li_from.children('a').append(span);
-  debugger;
 }
 
 function update_private_message_queue(msg_obj)
@@ -173,7 +167,7 @@ function Send()
 	} else {
 		msg.event = 'private'
 	}
-
+  msg.from = current_user_name;
   msg.message = document.getElementById("input").value;
   msg.selfie_url = selfie_url;
   msg.at = Date();
@@ -242,6 +236,12 @@ $.AdminLTE.tree = function (menu) {
     $('.box-title').html(title);
     $('.item').remove();
     drop_message_queue(find_active_user());
+    $this.children('span.label').remove();
+    var i_circle = document.createElement('i');
+    i_circle.className = 'fa fa-circle pull-right';
+    i_circle.style = "color:#3c8dbc;"
+    $this.append(i_circle);
+    //span.className = 'label label-primary pull-right';
     //Fix the layout in case the sidebar stretches over the height of the window
     _this.layout.fix();
   });
@@ -263,7 +263,6 @@ function drop_message_queue(from) {
       delete message_queue['private'][from.name];
     }
   }
-  debugger;
   msgs.forEach(function(e){
     WriteMessage(e, 'received');
   });
