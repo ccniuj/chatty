@@ -14,7 +14,7 @@ window.onbeforeunload = function(e) {
   // Close();
   // return 'Dialog text here.';
 };
-var message_queue = {};
+var message_queue = {'public':{}, 'private':{}, 'group':{}};
 
 function Connect() {
     websocket = new WebSocket( 
@@ -96,17 +96,28 @@ function find_active_user()
 
 function update_message_queue(msg_obj, channel)
 {
+
+
   var li_from = $('.treeview:contains("' + channel + '")');
-  if(typeof(message_queue[msg_obj.from])=='undefined') {
+  var key = '';
+  
+  if (msg_obj.event == 'public') {
+    key = msg_obj.channel;
+  } else {
+    key = msg_obj.from;
+  }
+
+  if(typeof(message_queue[msg_obj.event][key])=='undefined') {
     li_from.find('i.fa-circle').last().remove();
-    message_queue[msg_obj.from] = [msg_obj.message];
+    message_queue[msg_obj.event][key] = [msg_obj];
   } else {
     li_from.find('span.label').last().remove();
-    message_queue[msg_obj.from].push(msg_obj);
+    message_queue[msg_obj.event][key].push(msg_obj);
   }
+
   var span = document.createElement('span');
   span.className = 'label label-primary pull-right';
-  span.innerHTML = message_queue[msg_obj.from].count;
+  span.innerHTML = message_queue[msg_obj.event][key].count;
   li_from.children('a').append(span);
   debugger;
 }
@@ -219,5 +230,44 @@ function scroll_to_bottom()
     var scrollTo_val = $('#chat-box').prop('scrollHeight');
     $('#chat-box').slimScroll({ scrollTo: scrollTo_val, height: '410px' });
 }
+
+$.AdminLTE.tree = function (menu) {
+  var _this = this;
+  var animationSpeed = $.AdminLTE.options.animationSpeed;
+  $(document).on('click', menu + ' li a', function (e) {
+    var $this = $(this);
+    $("li.active").removeClass('active');
+    $this.parent("li").addClass('active');
+    var title = $this.find('span').html();
+    $('.box-title').html(title);
+    $('.item').remove();
+    drop_message_queue(find_active_user());
+    //Fix the layout in case the sidebar stretches over the height of the window
+    _this.layout.fix();
+  });
+};
+
+function drop_message_queue(from) {
+  if (from.channel == 'Chatty') {
+    msgs = message_queue['public'][from.channel];
+    if (typeof(msgs) == 'undefined') {
+      return false;
+    } else {
+    delete message_queue['public'][from.channel];
+    }
+  } else {
+    msgs = message_queue['private'][from.name];
+    if (typeof(msgs) == 'undefined') {
+      return false;
+    } else {
+      delete message_queue['private'][from.name];
+    }
+  }
+  debugger;
+  msgs.forEach(function(e){
+    WriteMessage(e, 'received');
+  });
+}
+
 //generate_chatbox();
 Init();
