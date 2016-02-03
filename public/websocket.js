@@ -140,7 +140,7 @@ function WriteMessage( message, message_type)
              '<p class="message">' +
              '<a href="#" class="name">' +
                '<small class="text-muted pull-right"><i class="fa fa-clock-o"></i>'+
-               message.at +
+               format_time(new Date(message.at)) +
                '</small>' +
                message.from +
                '</a>' +
@@ -152,6 +152,10 @@ function WriteMessage( message, message_type)
     item.innerHTML = html;
     document.getElementById("chat-box").appendChild(item);
     scroll_to_bottom();
+}
+function format_time(date)
+{
+  return date.getHours() + ':' + date.getMinutes();
 }
 function WriteStatus( message )
 {
@@ -170,7 +174,7 @@ function Send()
   msg.from = current_user_name;
   msg.message = document.getElementById("input").value;
   msg.selfie_url = selfie_url;
-  msg.at = Date();
+  msg.at = new Date();
   WriteMessage(msg, 'sent');
   websocket.send(JSON.stringify(msg));
 }
