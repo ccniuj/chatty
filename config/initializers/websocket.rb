@@ -70,7 +70,6 @@ class ChatController
     Message[:connections] = @current_connection
     _unregister_connection(@current_user.id)
     close
-    p 'plezi close websocket'
     broadcast :_send_message, Message.to_json
   end
 
@@ -99,20 +98,11 @@ class ChatController
 
   def get_connections
     Connection.all.map{|c|{'uuid' => c.uuid, 'user' => User.find(c.user_id)}}.uniq
-    # connections = ObjectSpace.each_object(Plezi::Base::WSObject).to_a.map do |connection|
-    #   {'uuid' => connection.cookies['rails_uuid'], 'user' => connection.get_user}
-    # end.
-    # uniq
   end
 
   def get_current_connection(user_id)
     c = Connection.find_by(:user_id => user_id)
     c ? [{'uuid' => c.uuid, 'user' => User.find(user_id)}] : []
-    # @connections ||= get_connections
-    # @current_user ||= get_user
-    # @connections.select do |connection|
-    #   connection['user'].id == @current_user.id
-    # end
   end
 
   # event handler
@@ -121,6 +111,7 @@ class ChatController
     begin
       _init_message(data)
       broadcast :_send_message, Message.to_json
+      _robot(Message)
     rescue Exception => e
       response << {event: :error, message: "Unknown Error"}.to_json
       close
@@ -162,6 +153,15 @@ class ChatController
 
   def _unregister_connection(user_id)
     Connection.where(:user_id => user_id).each{|c|c.destroy}
+  end
+
+  def _robot(msg)
+    if msg[:message] == 'ping'
+      msg[:message] = 'pong'
+      msg[:from] = 'Chatty'
+      response << msg.to_json
+      broadcast :_send_message, msg.to_json
+    end
   end
 end
 
