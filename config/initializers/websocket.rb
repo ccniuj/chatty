@@ -154,6 +154,8 @@ class ChatController
   end
 
   def _robot(msg)
+    redis = Redis.new
+
     if msg[:message] == 'ping'
       msg[:message] = 'pong'
       msg[:from] = 'Chatty'
@@ -161,6 +163,18 @@ class ChatController
       response << msg.to_json
       broadcast :_send_message, msg.to_json
     end
+
+    if msg[:message].include?('天氣') || msg[:message].downcase.include?('weather')
+      str = "現在溫度#{redis.get('temperature')}，濕度#{redis.get('humidity')}"
+      str.concat("，天氣為#{redis.get('weather')}") if (redis.get('weather').size > 0)
+      str.concat("。")
+      msg[:message] = str
+      msg[:from] = 'Chatty'
+      msg[:selfie_url] = Chatty_selfie_url
+      response << msg.to_json
+      broadcast :_send_message, msg.to_json
+    end
+    
   end
 end
 

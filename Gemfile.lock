@@ -205,11 +205,13 @@ DEPENDENCIES
   figaro
   jbuilder (~> 2.0)
   jquery-rails
+  nokogiri
   omniauth-google-oauth2
   pg
   plezi
   pry
   rails (= 4.2.4)
+  redis
   redis-session-store
   rufus-scheduler
   sass-rails (~> 5.0)
