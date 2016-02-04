@@ -10,13 +10,14 @@ end
 
 class ChatController
   @auto_dispatch = true
+  Chatty_selfie_url = "http://iconpopanswers.com/wp-content/uploads/2013/03/icon-pop-quiz-24.jpg"
   Message = {
     event:         '',
     from:          '',
     channel:       '',
     at:            Time.now,
     message:       "",
-    selfie_url:    "",
+    selfie_url:    Chatty_selfie_url,
     connections:   []
   }
   
@@ -49,7 +50,6 @@ class ChatController
     Message[:event] = "open"
     Message[:from] = "Chatty"
     Message[:message] = greeting
-    Message[:selfie_url] = @current_user.selfie_url
     Message[:connections] = @other_connections
 
     response << Message.to_json
@@ -80,8 +80,6 @@ class ChatController
   def _init_env
     @current_user = get_user
     @connections = get_connections
-    # @current_connection = get_current_connection(@current_user.id)
-    # @other_connections = get_connections.reject{|c|c == @current_connection.first} if get_current_connection(@current_user.id)
   end
 
   def get_user
@@ -159,6 +157,7 @@ class ChatController
     if msg[:message] == 'ping'
       msg[:message] = 'pong'
       msg[:from] = 'Chatty'
+      msg[:selfie_url] = Chatty_selfie_url
       response << msg.to_json
       broadcast :_send_message, msg.to_json
     end
