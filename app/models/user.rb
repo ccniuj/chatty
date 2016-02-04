@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  before_create :init
   # encoding: utf-8
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
@@ -20,5 +21,10 @@ class User < ActiveRecord::Base
     end
     p 'user model'
     user
+  end
+
+  def init
+    self.selfie_url = 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg'
+    self.name = self.email.split('@').first if (self.name =~ /\p{Han}/)
   end
 end
