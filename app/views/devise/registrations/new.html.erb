@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>AdminLTE 2 | Registration Page</title>
+    <title>Chatty | 註冊</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.5 -->
@@ -27,53 +27,45 @@
   <body class="hold-transition register-page">
     <div class="register-box">
       <div class="register-logo">
-        <a href="/template/index2.html"><b>Admin</b>LTE</a>
+        <a href="/template/index2.html">註冊<b>Chatty</b></a>
       </div>
 
       <div class="register-box-body">
-        <p class="login-box-msg">Register a new membership</p>
+        <p class="login-box-msg"></p>
         <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
           <%= devise_error_messages! %>
           <div class="form-group has-feedback">
-            <input type="text" class="form-control" placeholder="Full name">
+            <%= f.text_field :name, autofocus: true, :class => 'form-control', :placeholder => '名稱' %>
             <span class="glyphicon glyphicon-user form-control-feedback"></span>
           </div>
           <div class="form-group has-feedback">
-            <%= f.email_field :email, autofocus: true, :class => 'form-control', :placeholder => 'Email' %>
+            <%= f.email_field :email, :class => 'form-control', :placeholder => '電子信箱' %>
             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
           </div>
           <div class="form-group has-feedback">
-            
-            <%= f.password_field :password, autocomplete: "off", :class => 'form-control', :placeholder => 'Password' %>
+            <%= f.password_field :password, autocomplete: "off", :class => 'form-control', :placeholder => '密碼' %>
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             <% if @minimum_password_length %>
-              <em>(<%= @minimum_password_length %> characters minimum)</em>
+              <em>(最少需<%= @minimum_password_length %>個字元)</em>
             <% end %><br />
           </div>
           <div class="form-group has-feedback">
-            <%= f.password_field :password_confirmation, autocomplete: "off", :class => 'form-control', :placeholder => 'Retype password' %>
+            <%= f.password_field :password_confirmation, autocomplete: "off", :class => 'form-control', :placeholder => '確認密碼' %>
             <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
           </div>
           <div class="row">
-            <div class="col-xs-8">
-              <div class="checkbox icheck">
-                <label>
-                  <input type="checkbox"> I agree to the <a href="#">terms</a>
-                </label>
-              </div>
-            </div><!-- /.col -->
-            <div class="col-xs-4">
-              <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+            <div class="col-xs-4 col-xs-offset-4">
+              <button type="submit" class="btn btn-primary btn-block btn-flat">註冊</button>
             </div><!-- /.col -->
           </div>
         <% end %>
 
         <div class="social-auth-links text-center">
           <p>- OR -</p>
-          <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Sign up using Facebook</a>
-          <a href="#" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i> Sign up using Google+</a>
+          <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i>Facebook帳號登入</a>
+          <a href="#" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i>Googl帳號登入</a>
         </div>
-        <%= render "devise/shared/links" %>
+        <%= link_to '登入', new_user_session_path %><br/>
       </div><!-- /.form-box -->
     </div><!-- /.register-box -->
 

@@ -35,11 +35,11 @@
         <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
           <%= devise_error_messages! %>
           <div class="form-group has-feedback">
-            <%= f.email_field :email, autofocus: true, :placeholder => 'Email', :class => 'form-control' %>
+            <%= f.email_field :email, autofocus: true, :placeholder => '電子信箱', :class => 'form-control' %>
             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
           </div>
           <div class="form-group has-feedback">
-            <%= f.password_field :password, autocomplete: "off", :placeholder => 'Password', :class => 'form-control'%>
+            <%= f.password_field :password, autocomplete: "off", :placeholder => '密碼', :class => 'form-control'%>
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
           </div>
           <div class="row">
@@ -63,8 +63,8 @@
 
         <div class="social-auth-links text-center">
           <p>- OR -</p>
-          <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Sign in using Facebook</a>
-          <a href="<%=user_omniauth_authorize_path(:google_oauth2)%>" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i> Sign in using Google+</a>
+          <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i>Facebook帳號登入</a>
+          <a href="<%=user_omniauth_authorize_path(:google_oauth2)%>" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i>Google帳號登入</a>
         </div><!-- /.social-auth-links -->
         <%= link_to '註冊', new_user_registration_path %><br/>
         <%= link_to '忘記密碼', new_user_password_path %>
