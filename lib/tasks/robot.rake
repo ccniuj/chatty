@@ -7,7 +7,7 @@ namespace :robot do
 		redis = Redis.new
 		session = ObjectSpace.each_object(ActionDispatch::Integration::Session)
 		scheduler = Rufus::Scheduler.new
-    scheduler.every '15m' do
+    scheduler.every '60s' do
    		Crawler.fetch_weather
     end
     scheduler.join
