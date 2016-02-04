@@ -165,10 +165,10 @@ class ChatController
     end
 
     if msg[:message].include?('天氣') || msg[:message].downcase.include?('weather')
-      # str = "Temperature #{redis.get('temperature')}, humidity #{redis.get('humidity')}"
-      # str.concat(", weather#{redis.get('weather')}") if (redis.get('weather').size > 0)
-      # str.concat(".")
-      msg[:message] = redis.get('temperature')
+      str = "現在溫度為#{redis.get('temperature')}，濕度為#{redis.get('humidity')}"
+      str.concat("，天氣為#{redis.get('weather')}") if (redis.get('weather').size > 0)
+      str.concat("。")
+      msg[:message] = str
       msg[:from] = 'Chatty'
       msg[:selfie_url] = Chatty_selfie_url
       response << msg.to_json
