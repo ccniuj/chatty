@@ -17,7 +17,7 @@ class ChatController
     channel:       '',
     at:            Time.now,
     message:       "",
-    selfie_url:    Chatty_selfie_url,
+    selfie_url:    "",
     connections:   []
   }
   
@@ -50,6 +50,7 @@ class ChatController
     Message[:event] = "open"
     Message[:from] = "Chatty"
     Message[:message] = greeting
+    Message[:selfie_url] = Chatty_selfie_url
     Message[:connections] = @other_connections
 
     response << Message.to_json
