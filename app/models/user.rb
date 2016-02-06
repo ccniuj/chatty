@@ -25,6 +25,6 @@ class User < ActiveRecord::Base
 
   def init
     self.selfie_url = 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg'
-    self.name = self.email.split('@').first if (self.name =~ /\p{Han}/)
+    # self.name = self.email.split('@').first if (self.name =~ /\p{Han}/)
   end
 end

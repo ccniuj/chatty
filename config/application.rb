@@ -13,6 +13,10 @@ elsif Rails.const_defined?('Server')
   # require_relative  '../app/sync/plezi_sync.rb'
 end
 
+Plezi::Renderer.register :erb do |filename, context, &block|
+    ( Plezi.cache_needs_update?(filename) ? Plezi.cache_data( filename, ( ERB.new( IO.binread(filename).force_encoding("UTF-8")  ) ) )  : (Plezi.get_cached filename) ).result((context) , &block)
+end
+
 # module OpenSSL
 #    module SSL
 #        SSLErrorWaitReadable = IO::WaitReadable
